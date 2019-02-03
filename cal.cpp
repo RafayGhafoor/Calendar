@@ -2,19 +2,11 @@
 
 using std::cout;
 
-struct duration
+struct actMetaData
 {
-    int month;
-    int date;
-    int time;
-};
-
-struct activity
-{
-    char *title;
-    char *userid;
-    duration time;
+    int duration;
     float priority;
+    char user_id[256], title[250];
 };
 
 void initCal(int *****&calendar)
