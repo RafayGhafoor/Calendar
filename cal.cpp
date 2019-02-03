@@ -6,7 +6,7 @@ struct actMetaData
 {
     int duration;
     float priority;
-    char user_id[256], title[250];
+    char *user_id, *title;
 };
 
 void initCal(int *****&calendar)
