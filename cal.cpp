@@ -71,6 +71,7 @@ void delCal(int *****&calendar)
 void resizeActivity(int *****&calendar, int month, int day, int hour, int size,
                     int expand = 10)
 {
+    // Resizes the pointers of the activity
 
     int **ptr = new int *[size + expand];
 
@@ -83,6 +84,8 @@ void resizeActivity(int *****&calendar, int month, int day, int hour, int size,
 
 int getSize(int **&calendar, int month, int day, int hour, int reserve = 0)
 {
+    // Returns count of the allocated pointers; used for checking activities
+    // existence.
     int allocated_hours = reserve;
 
     for (; calendar[month][day][allocated_hours]; allocated_hours++)
