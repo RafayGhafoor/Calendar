@@ -7,7 +7,8 @@ using std::cout;
 Playing with parsing of data files
 */
 
-struct actMetaData {
+struct actMetaData
+{
   int month, day, start, end;
 
   float priority;
@@ -15,7 +16,8 @@ struct actMetaData {
   char *user_id, *title;
 };
 
-int main() {
+int main()
+{
   // Contains the number of days in each months for year <2019>
   // int days_in_months[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   // day/month, start_time, end_time, userid, actid, title, priority
@@ -33,7 +35,8 @@ int main() {
   // 6 - Priority
 
   char *pch = std::strtok(text, ",/");
-  while (pch != NULL) {
+  while (pch != NULL)
+  {
     cout << pch << std::endl;
     pch = std::strtok(NULL, ",/");
   }
