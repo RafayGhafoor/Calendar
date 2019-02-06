@@ -4,12 +4,12 @@ using std::cout;
 
 struct actMetaData
 {
-    int duration;
+    int month, day, period;
     float priority;
     char *user_id, *title;
 };
 
-int DAYS_IN_MONTHS[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const int DAYS_IN_MONTHS[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // http://blog.slickedit.com/2007/11/c-tips-pointers-and-memory-management/
 
@@ -82,6 +82,29 @@ void resizeActivity(int *****&calendar, int month, int day, int hour, int size,
     calendar[month][day][hour] = ptr;
 }
 
+void fillAct(std::ifstream &fin, actMetaData &a)
+{
+    while (!fin.eof())
+    {
+        char text[200];
+        fin.getline(text, 200, '/');
+        a.day = atoi(text);
+        fin.getline(text, 200, ',');
+        a.month = atoi(text);
+        fin.getline(text, 200, ',');
+        a.period = atoi(text) * -1;
+        fin.getline(text, 200, ',');
+        a.period += atoi(text);
+        fin.getline(text, 200, ',');
+        a.user_id = text;
+        fin.getline(text, 200, ',');
+        fin.getline(text, 200, ',');
+        a.title = text;
+        fin.getline(text, 200, '\n');
+        a.priority = atof(text);
+    }
+}
+
 int getSize(int **&calendar, int month, int day, int hour, int reserve = 0)
 {
     // Returns count of the allocated pointers; used for checking activities
@@ -96,13 +119,14 @@ int getSize(int **&calendar, int month, int day, int hour, int reserve = 0)
 
 int main()
 {
+    return 0;
     // Initialize Calendar to the count of months in a year
-    int *****calendar = new int ****[12];
-    initCal(calendar);
-    resizeActivity(calendar, 2, 2, 2, 10);
-    int s = 4;
-    int *ptr = &s;
-    calendar[2][2][2][43] = ptr;
-    cout << *calendar[2][2][2][43];
-    delCal(calendar);
+    // int *****calendar = new int ****[12];
+    // initCal(calendar);
+    // resizeActivity(calendar, 2, 2, 2, 10);
+    // int s = 4;
+    // int *ptr = &s;
+    // calendar[2][2][2][43] = ptr;
+    // cout << *calendar[2][2][2][43];
+    // delCal(calendar);
 }
