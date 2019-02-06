@@ -2,17 +2,29 @@
 
 using std::cout;
 
-struct actMetaData {
+struct actMetaData
+{
   int month, day, period;
   float priority;
   char *user_id, *title;
 };
 
+// http://thedeepbluecpp.blogspot.com/2014/01/rule-2-make-all-type-conversions.html
+
+// Type conversions should be isolated in their own line, which should consist
+// only of the assignment of the result of the type conversion to a variable of
+// the target type.
+
+// https://stackoverflow.com/questions/14067153/are-uintptr-t-and-size-t-same?noredirect=1&lq=1
+
+// http://web.archive.org/web/20140828142605/http://www.codeproject.com/Articles/60082/About-size_t-and-ptrdiff_t
+
 const int DAYS_IN_MONTHS[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // http://blog.slickedit.com/2007/11/c-tips-pointers-and-memory-management/
 
-void initCal(int *****&calendar) {
+void initCal(int *****&calendar)
+{
   /* Initializes the calendar having the following format:
 Months as a base for pointers containing quad-pointers; pointing towards
 > Days > Hours > Activities > Activites Container.
@@ -30,10 +42,12 @@ Constants Representation (in loops:
   // and wherever (time in hours > activities > activites container) they point
   // will always be the ith index of DAYS_IN_MONTHS
 
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i < 12; i++)
+  {
     calendar[i] = new int ***[DAYS_IN_MONTHS[i]];
 
-    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++) {
+    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
+    {
       calendar[i][j] = new int **[24];
       for (int k = 0; k < 24; k++)
         calendar[i][j][k] = new int *[10]();
@@ -41,15 +55,18 @@ Constants Representation (in loops:
   }
 }
 
-void delCal(int *****&calendar) {
+void delCal(int *****&calendar)
+{
   // A garbage cleaner function for the memory allocated by the calendar.
 
   // | The grantation of rights comes with a responsibility to bear. Treat
   // pointers with the respect you would treat a firearm — and you may not find
   // yourself shot in your own foot.| #1
 
-  for (int i = 0; i < 12; i++) {
-    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++) {
+  for (int i = 0; i < 12; i++)
+  {
+    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
+    {
       for (int k = 0; k < 24; k++)
         delete[] calendar[i][j][k];
       delete[] calendar[i][j];
@@ -58,11 +75,13 @@ void delCal(int *****&calendar) {
   }
 
   delete[] calendar;
-  calendar = NULL;
+  // https://stackoverflow.com/questions/20509734/null-vs-nullptr-why-was-it-replaced
+  calendar = nullptr;
 }
 
 void resizeActivity(int *****&calendar, int month, int day, int hour, int size,
-                    int expand = 10) {
+                    int expand = 10)
+{
   // Resizes the pointers of the activity
 
   int **ptr = new int *[size + expand];
@@ -74,28 +93,40 @@ void resizeActivity(int *****&calendar, int month, int day, int hour, int size,
   calendar[month][day][hour] = ptr;
 }
 
-void fillAct(std::ifstream &fin, actMetaData &a) {
-  while (!fin.eof()) {
+void fillAct(std::ifstream &fin, actMetaData &a)
+{
+  while (!fin.eof())
+  {
     char text[200];
     fin.getline(text, 200, '/');
     a.day = atoi(text);
     fin.getline(text, 200, ',');
     a.month = atoi(text);
+
+    // Period is calculated by subtracting end time - start time,
+    // where start time is always smaller than end time
+
     fin.getline(text, 200, ',');
     a.period = atoi(text) * -1;
     fin.getline(text, 200, ',');
     a.period += atoi(text);
+
     fin.getline(text, 200, ',');
     a.user_id = text;
+
+    fin.getline(text, 200, ','); // Skips actID
+
     fin.getline(text, 200, ',');
-    fin.getline(text, 200, ',');
+
     a.title = text;
     fin.getline(text, 200, '\n');
     a.priority = atof(text);
   }
 }
 
-int getSize(int **&calendar, int month, int day, int hour, int reserve = 0) {
+int getActivities(int **&calendar, int month, int day, int hour,
+                  int reserve = 0)
+{
   // Returns count of the allocated pointers; used for checking activities
   // existence.
   int allocated_hours = reserve;
@@ -106,7 +137,8 @@ int getSize(int **&calendar, int month, int day, int hour, int reserve = 0) {
   return allocated_hours;
 }
 
-int main() {
+int main()
+{
   return 0;
   // Initialize Calendar to the count of months in a year
   // int *****calendar = new int ****[12];
