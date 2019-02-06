@@ -1,3 +1,5 @@
+#include <cstring>
+#include <fstream>
 #include <iostream>
 
 using std::cout;
@@ -79,12 +81,25 @@ void delCal(int *****&calendar)
   calendar = nullptr;
 }
 
-void resizeActivity(int *****&calendar, int month, int day, int hour, int size,
-                    int expand = 10)
+int getActivities(int **&calendar)
+{
+  // Returns count of the allocated pointers; used for checking activities
+  // existence.
+  int act_count = 0;
+
+  while (calendar[act_count])
+    act_count++;
+
+  return act_count;
+}
+
+void resizeActivity(int *****&calendar, int month, int day, int hour)
 {
   // Resizes the pointers of the activity
 
-  int **ptr = new int *[size + expand];
+  int size = getActivities(calendar[month][day][hour]);
+  cout << size;
+  int **ptr = new int *[++size];
 
   for (int k = 0; k < size; k++)
     ptr[k] = calendar[month][day][hour][k];
@@ -124,29 +139,11 @@ void fillAct(std::ifstream &fin, actMetaData &a)
   }
 }
 
-int getActivities(int **&calendar, int month, int day, int hour,
-                  int reserve = 0)
-{
-  // Returns count of the allocated pointers; used for checking activities
-  // existence.
-  int allocated_hours = reserve;
-
-  for (; calendar[month][day][allocated_hours]; allocated_hours++)
-    ;
-
-  return allocated_hours;
-}
-
 int main()
 {
-  return 0;
   // Initialize Calendar to the count of months in a year
-  // int *****calendar = new int ****[12];
-  // initCal(calendar);
-  // resizeActivity(calendar, 2, 2, 2, 10);
-  // int s = 4;
-  // int *ptr = &s;
-  // calendar[2][2][2][43] = ptr;
-  // cout << *calendar[2][2][2][43];
-  // delCal(calendar);
+  int *****calendar = new int ****[12];
+  initCal(calendar);
+  resizeActivity(calendar, 0, 0, 0);
+  delCal(calendar);
 }
