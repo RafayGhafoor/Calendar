@@ -4,7 +4,7 @@
 
 using std::cout;
 
-struct actMetaData
+struct activity
 {
   int month, day, period;
   float priority;
@@ -46,13 +46,13 @@ Constants Representation (in loops:
 
   for (int i = 0; i < 12; i++)
   {
-    calendar[i] = new int ***[DAYS_IN_MONTHS[i]];
+    calendar[i] = new activity ***[DAYS_IN_MONTHS[i]];
 
     for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
     {
-      calendar[i][j] = new int **[24];
+      calendar[i][j] = new activity **[24];
       for (int k = 0; k < 24; k++)
-        calendar[i][j][k] = new int *[10]();
+        calendar[i][j][k] = new activity *[1];
     }
   }
 }
@@ -98,8 +98,7 @@ void resizeActivity(int *****&calendar, int month, int day, int hour)
   // Resizes the pointers of the activity
 
   int size = getActivities(calendar[month][day][hour]);
-  cout << size;
-  int **ptr = new int *[++size];
+  activity **ptr = new activity *[size + 1];
 
   for (int k = 0; k < size; k++)
     ptr[k] = calendar[month][day][hour][k];
@@ -108,7 +107,7 @@ void resizeActivity(int *****&calendar, int month, int day, int hour)
   calendar[month][day][hour] = ptr;
 }
 
-void fillAct(std::ifstream &fin, actMetaData &a)
+void fillAct(std::ifstream &fin, activity &a)
 {
   while (!fin.eof())
   {
@@ -136,13 +135,19 @@ void fillAct(std::ifstream &fin, actMetaData &a)
     a.title = text;
     fin.getline(text, 200, '\n');
     a.priority = atof(text);
+    a.month--, a.day--, a.hour--;
+    // calendar[a.month][a.day][a.hour][getSize()] = new activity;
+    // calendar[a.month][a.day][a.hour][getSize()].title = new char[strlen(a.title)];
+    // calendar[a.month][a.day][a.hour][getSize()].userid = new char[strlen(a.userid)];
+    // strcpy(calendar[a.month][a.day][a.hour][getSize()].title, a.title);
+    // strcpy(calendar[a.month][a.day][a.hour][getSize()].userid, a.userid);
   }
 }
 
 int main()
 {
   // Initialize Calendar to the count of months in a year
-  int *****calendar = new int ****[12];
+  activity *****calendar = new activity ***[12];
   initCal(calendar);
   resizeActivity(calendar, 0, 0, 0);
   delCal(calendar);
