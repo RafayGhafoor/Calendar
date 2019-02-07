@@ -81,7 +81,7 @@ void delCal(activity *****&calendar)
   calendar = nullptr;
 }
 
-int getActivities(activity **&calendar)
+int getActivities(const activity **&calendar)
 {
   // Returns count of the allocated pointers; used for checking activities
   // existence.
@@ -135,6 +135,7 @@ void fillAct(std::ifstream &fin, activity &a)
     a.title = text;
     fin.getline(text, 200, '\n');
     a.priority = atof(text);
+
     a.month--, a.day--, a.period--;
     // calendar[a.month][a.day][a.hour][getSize()] = new activity;
     // calendar[a.month][a.day][a.hour][getSize()].title = new
