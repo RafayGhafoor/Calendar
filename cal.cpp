@@ -25,7 +25,7 @@ const int DAYS_IN_MONTHS[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // http://blog.slickedit.com/2007/11/c-tips-pointers-and-memory-management/
 
-void initCal(int *****&calendar)
+void initCal(activity *****&calendar)
 {
   /* Initializes the calendar having the following format:
 Months as a base for pointers containing quad-pointers; pointing towards
@@ -57,7 +57,7 @@ Constants Representation (in loops:
   }
 }
 
-void delCal(int *****&calendar)
+void delCal(activity *****&calendar)
 {
   // A garbage cleaner function for the memory allocated by the calendar.
 
@@ -81,7 +81,7 @@ void delCal(int *****&calendar)
   calendar = nullptr;
 }
 
-int getActivities(int **&calendar)
+int getActivities(activity **&calendar)
 {
   // Returns count of the allocated pointers; used for checking activities
   // existence.
@@ -93,7 +93,7 @@ int getActivities(int **&calendar)
   return act_count;
 }
 
-void resizeActivity(int *****&calendar, int month, int day, int hour)
+void resizeActivity(activity *****&calendar, int month, int day, int hour)
 {
   // Resizes the pointers of the activity
 
@@ -135,10 +135,11 @@ void fillAct(std::ifstream &fin, activity &a)
     a.title = text;
     fin.getline(text, 200, '\n');
     a.priority = atof(text);
-    a.month--, a.day--, a.hour--;
+    a.month--, a.day--, a.period--;
     // calendar[a.month][a.day][a.hour][getSize()] = new activity;
-    // calendar[a.month][a.day][a.hour][getSize()].title = new char[strlen(a.title)];
-    // calendar[a.month][a.day][a.hour][getSize()].userid = new char[strlen(a.userid)];
+    // calendar[a.month][a.day][a.hour][getSize()].title = new
+    // char[strlen(a.title)]; calendar[a.month][a.day][a.hour][getSize()].userid
+    // = new char[strlen(a.userid)];
     // strcpy(calendar[a.month][a.day][a.hour][getSize()].title, a.title);
     // strcpy(calendar[a.month][a.day][a.hour][getSize()].userid, a.userid);
   }
@@ -147,7 +148,7 @@ void fillAct(std::ifstream &fin, activity &a)
 int main()
 {
   // Initialize Calendar to the count of months in a year
-  activity *****calendar = new activity ***[12];
+  activity *****calendar = new activity ****[12];
   initCal(calendar);
   resizeActivity(calendar, 0, 0, 0);
   delCal(calendar);
