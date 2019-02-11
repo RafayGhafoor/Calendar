@@ -3,7 +3,8 @@
 
 using namespace std;
 
-bool isValidID(char userID[]) {
+bool isValidID(char userID[])
+{
   /*
     Sanity check for userid.
 
@@ -36,7 +37,8 @@ bool isValidID(char userID[]) {
   return idStatus;
 }
 
-bool isValidMonth(int month) {
+bool isValidMonth(int month)
+{
   // Sanity check for months validity (check is based upon index which will
   // always be 1 less than the month)
   if (month < 0 || month > 11)
@@ -44,7 +46,8 @@ bool isValidMonth(int month) {
   return true;
 }
 
-bool isValidDay(int day) {
+bool isValidDay(int day)
+{
   // Max day size is 30 because we will be comparing against month index which
   // is (n - 1)
   if (day < 0 || day > 30)
@@ -52,7 +55,8 @@ bool isValidDay(int day) {
   return true;
 }
 
-bool isValidPeriod(int start_month, int end_month, int start_day, int end_day) {
+bool isValidPeriod(int start_month, int end_month, int start_day, int end_day)
+{
   /*
   A period is only valid if end month will be greater than start month because
   you can't go back in time :P The end day could also not be greater than start
@@ -70,10 +74,12 @@ bool isValidPeriod(int start_month, int end_month, int start_day, int end_day) {
 
 // *************Function overloading, supporting double (for priority) and int
 // array types**************
-int findMax(int arr[], const size_t &size) {
+int findMax(int arr[], const size_t &size)
+{
   // Returns maximum number index in the array of integers
   int max_index = 0;
-  for (size_t i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++)
+  {
     if (arr[max_index] <= arr[i])
       max_index = i;
   }
@@ -81,11 +87,13 @@ int findMax(int arr[], const size_t &size) {
   return max_index;
 }
 
-int findMax(double arr[], const size_t &size) {
+int findMax(double arr[], const size_t &size)
+{
   // Returns maximum number index in the array of doubles
   int max_index = 0;
 
-  for (size_t i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++)
+  {
     if (arr[max_index] <= arr[i])
       max_index = i;
   }

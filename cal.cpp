@@ -6,7 +6,7 @@ using std::cout;
 
 struct activity
 {
-  int month, day, period;
+  int month, day, start_time, end_time;
   float priority;
   char *user_id, *title;
 };
@@ -44,6 +44,8 @@ Constants Representation (in loops:
   // and wherever (time in hours > activities > activites container) they point
   // will always be the ith index of DAYS_IN_MONTHS
 
+  calendar = new activity ****[12]; // Months array.
+
   for (int i = 0; i < 12; i++)
   {
     calendar[i] = new activity ***[DAYS_IN_MONTHS[i]];
@@ -55,30 +57,6 @@ Constants Representation (in loops:
         calendar[i][j][k] = new activity *[1]();
     }
   }
-}
-
-void delCal(activity *****&calendar)
-{
-  // A garbage cleaner function for the memory allocated by the calendar.
-
-  // | The grantation of rights comes with a responsibility to bear. Treat
-  // pointers with the respect you would treat a firearm — and you may not find
-  // yourself shot in your own foot.| #1
-
-  for (int i = 0; i < 12; i++)
-  {
-    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
-    {
-      for (int k = 0; k < 24; k++)
-        delete[] calendar[i][j][k];
-      delete[] calendar[i][j];
-    }
-    delete[] calendar[i];
-  }
-
-  delete[] calendar;
-  // https://stackoverflow.com/questions/20509734/null-vs-nullptr-why-was-it-replaced
-  calendar = nullptr;
 }
 
 int getActivities(activity **&calendar)
@@ -94,25 +72,54 @@ int getActivities(activity **&calendar)
   return act_count;
 }
 
-void resizeActivity(activity *****&calendar, int month, int day, int hour)
+void delCal(activity *****&calendar)
+{
+  // A garbage cleaner function for the memory allocated by the calendar.
+
+  // | The grantation of rights comes with a responsibility to bear. Treat
+  // pointers with the respect you would treat a firearm — and you may not find
+  // yourself shot in your own foot.| #1
+
+  for (int i = 0; i < 12; i++)
+  {
+    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
+    {
+      for (int k = 0; k < 24; k++)
+      {
+        for (int l = 0; k < getActivities(calendar[i][j][k]); l++)
+        {
+          delete[] calendar[i][j][k][l]->user_id;
+          delete[] calendar[i][j][k][l]->title;
+        }
+        delete[] calendar[i][j][k];
+      }
+      delete[] calendar[i][j];
+    }
+    delete[] calendar[i];
+  }
+
+  delete[] calendar;
+  // https://stackoverflow.com/questions/20509734/null-vs-nullptr-why-was-it-replaced
+  calendar = nullptr;
+}
+
+void resizeActivity(activity **&calendar, const int &size)
 {
   // Resizes the pointers of the activity
 
-  int size = getActivities(calendar[month][day][hour]);
   activity **ptr = new activity *[size + 1];
 
   for (int k = 0; k < size; k++)
-    ptr[k] = calendar[month][day][hour][k];
-
-  delete[] calendar[month][day][hour];
-  calendar[month][day][hour] = ptr;
+    ptr[k] = calendar[k];
+  delete[] calendar;
+  calendar = ptr;
 }
 
-void fillAct(std::ifstream &fin, activity &a)
+void fillCal(activity *****&cal, std::ifstream &fin)
 {
 
   // https://stackoverflow.com/questions/40303500/c-how-to-read-a-line-with-delimiter-until-the-end-of-each-line
-
+  activity a;
   char text[200];
 
   // https://stackoverflow.com/questions/5578631/how-do-you-stop-reading-integer-from-text-file-when-encounter-negative-integer/5578649#5578649
@@ -128,44 +135,83 @@ void fillAct(std::ifstream &fin, activity &a)
     // where start time is always smaller than end time
 
     fin.getline(text, 200, ',');
-    a.period = atoi(text) * -1;
+    a.start_time = atoi(text);
     fin.getline(text, 200, ',');
-    a.period += atoi(text);
+    a.end_time = atoi(text);
 
     fin.getline(text, 200, ',');
-    a.user_id = text;
+    a.user_id = new char[strlen(text)];
+    strcpy(a.user_id, text);
 
     fin.getline(text, 200, ','); // Skips actID
 
     fin.getline(text, 200, ',');
+    a.title = new char[strlen(text)];
+    strcpy(a.title, text);
 
-    a.title = text;
     fin.getline(text, 200, '\n');
-    a.priority = atof(text);
 
-    a.month--, a.day--, a.period--;
-    // calendar[a.month][a.day][a.hour][getSize()] = new activity;
-    // calendar[a.month][a.day][a.hour][getSize()].title = new
-    // char[strlen(a.title)]; calendar[a.month][a.day][a.hour][getSize()].userid
-    // = new char[strlen(a.userid)];
-    // strcpy(calendar[a.month][a.day][a.hour][getSize()].title, a.title);
-    // strcpy(calendar[a.month][a.day][a.hour][getSize()].userid, a.userid);
+    a.priority = atof(text);
+    a.month--, a.day--, a.start_time--, a.end_time--;
+
+    // Calendar Filling from here!
+    int index = getActivities(cal[a.month][a.day][a.start_time]); // Obtain the size and index of unfilled activities
+
+    cal[a.month][a.day][a.start_time][index] = new activity;
+
+    // Put title into calendar
+    cal[a.month][a.day][a.start_time][index][index].title =
+        new char[strlen(a.title)];
+
+    strcpy(cal[a.month][a.day][a.start_time][index][index].title, a.title);
+
+    cal[a.month][a.day][a.start_time][index][index].user_id =
+        new char[strlen(a.user_id)];
+
+    strcpy(cal[a.month][a.day][a.start_time][index][index].user_id, a.user_id);
+
+    cal[a.month][a.day][a.start_time][index][index].start_time = a.start_time;
+
+    cal[a.month][a.day][a.start_time][index][index].end_time = a.end_time;
+
+    cal[a.month][a.day][a.start_time][index][index].priority = a.priority;
+
+    resizeActivity(cal[a.month][a.day][a.start_time], index); // Resize the activity box by 1 leaving room for new activity
   }
 }
 
-void saveCalendar(activity *****&calendar)
-{
-  std::ofstream fout("modified_calendar.txt");
-}
+// void saveCalendar(activity *****&calendar)
+// {
+//   std::ofstream fout("modified_calendar.txt");
+// }
+
+// void list_activity(activity *****&calendar, int stMonth, int stDate, int
+// endDate)
+// {
+//   for (int i = 0; i < 24; i++)
+//   {
+//     for (int j = 0; calendar[stMonth][stDate][i][j]; j++)
+//     {
+//       cout << "User Id: " << calendar[stMonth][stDate][i][j][0].user_id <<
+//       endl; cout << "Activity Name: " <<
+//       calendar[stMonth][stDate][i][j].title << endl; cout << "Avtivity
+//       Priority: " << calendar[stMonth][stDate][i][j].priority
+//            << endl;
+//       cout << "Start Time of activity: " <<
+//       calendar[stMonth][stDate][i][j].day
+//            << "/" << calendar[stMonth][stDate][i][j].month << endl;
+//       cout << "Activity Period: " << calendar[stMonth][stDate][i][j].period
+//       << endl;
+//     }
+//   }
+// }
+
 int main()
 {
   // Initialize Calendar to the count of months in a year
+  std::ifstream fin("test.txt");
   activity *****calendar = new activity ****[12];
   initCal(calendar);
-  calendar[0][0][0][0] = new activity;
-  cout << getActivities(calendar[0][0][0]);
-  resizeActivity(calendar, 0, 0, 0);
-  calendar[0][0][0][1] = new activity;
-  cout << getActivities(calendar[0][0][0]);
+  fillCal(calendar, fin);
   delCal(calendar);
 }
