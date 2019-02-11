@@ -11,6 +11,16 @@ struct activity
   char *user_id, *title;
 };
 
+void listAct(char *userID, char *start_time, char *end_time);
+void listimpAct(char userID, char *start_time, char *end_time);
+void listFreePeriod(char *start_time, char *end_time, int days);
+void listClashAct(char *start_time, char *end_time, char userID1, char userID2);
+void listFreeSlots(char *start_time, char *end_time, char userID);
+void getActivityStats();
+void getCalendarStats();
+void deleteUser(char userID);
+void displayCalendar(char *month);
+
 // http://thedeepbluecpp.blogspot.com/2014/01/rule-2-make-all-type-conversions.html
 
 // Type conversions should be isolated in their own line, which should consist
@@ -232,6 +242,44 @@ void list_activity(activity *****&calendar, int stMonth, int stDate,
       cout << "Activity Period: " << calendar[stMonth][stDate][i][j].period
            << endl;
     }
+  }
+}
+
+void displayMenu()
+{
+  char s;
+
+  while (std::cin >> s)
+  {
+    if (s == '1')
+      listAct();
+
+    else if (s == '2')
+      listimpAct();
+
+    else if (s == '3')
+      listFreePeriod();
+
+    else if (s == '4')
+      listClashAct();
+
+    else if (s == '5')
+      listFreeSlots();
+
+    else if (s == '6')
+      getActivityStats();
+
+    else if (s == '7')
+      getCalendarStats();
+
+    else if (s == '8')
+      deleteUser();
+
+    else if (s == '9')
+      saveCal();
+
+    else if (s == '0')
+      displayCalendar();
   }
 }
 
