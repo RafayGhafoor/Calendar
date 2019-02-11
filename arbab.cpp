@@ -43,6 +43,7 @@ void InitializeActivity(activity *****&calendar, int days[]) {
 void Resize(activity **&calendar, int &size) {
   if (size == 0)
     size++;
+
   activity **temp = new activity *[size + 1];
   for (int i = 0; i < size; i++)
     temp[i] = calendar[i];
@@ -370,6 +371,7 @@ int main() {
     for (int j = 0; j < 31; j++)
       for (int k = 0; k < 24; k++)
         activitySize[i][j][k] = {0};
+
   allocateCalendar(calendar, days);
   InitializeActivity(calendar, days);
   EnterData(calendar, activitySize);
