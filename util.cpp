@@ -15,7 +15,7 @@ bool isValidID(char userID[]) {
 
   */
   bool idStatus = true;
-  char begin[] = "user";
+  char begin[] = "user"; // userID must begin with 'user'
 
   int length = strlen(userID);
 
@@ -66,4 +66,29 @@ bool isValidPeriod(int start_month, int end_month, int start_day, int end_day) {
       return false;
 
   return true;
+}
+
+// *************Function overloading, supporting double (for priority) and int
+// array types**************
+int findMax(int arr[], const size_t &size) {
+  // Returns maximum number index in the array of integers
+  int max_index = 0;
+  for (size_t i = 0; i < size; i++) {
+    if (arr[max_index] <= arr[i])
+      max_index = i;
+  }
+
+  return max_index;
+}
+
+int findMax(double arr[], const size_t &size) {
+  // Returns maximum number index in the array of doubles
+  int max_index = 0;
+
+  for (size_t i = 0; i < size; i++) {
+    if (arr[max_index] <= arr[i])
+      max_index = i;
+  }
+
+  return max_index;
 }

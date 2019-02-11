@@ -52,7 +52,7 @@ Constants Representation (in loops:
     {
       calendar[i][j] = new activity **[24];
       for (int k = 0; k < 24; k++)
-        calendar[i][j][k] = new activity *[1];
+        calendar[i][j][k] = new activity *[1]();
     }
   }
 }
@@ -81,10 +81,11 @@ void delCal(activity *****&calendar)
   calendar = nullptr;
 }
 
-int getActivities(const activity **&calendar)
+int getActivities(activity **&calendar)
 {
   // Returns count of the allocated pointers; used for checking activities
   // existence.
+  // Usage Example: getActivities(calendar[0][0][0])
   int act_count = 0;
 
   while (calendar[act_count])
@@ -109,10 +110,16 @@ void resizeActivity(activity *****&calendar, int month, int day, int hour)
 
 void fillAct(std::ifstream &fin, activity &a)
 {
-  while (!fin.eof())
+
+  // https://stackoverflow.com/questions/40303500/c-how-to-read-a-line-with-delimiter-until-the-end-of-each-line
+
+  char text[200];
+
+  // https://stackoverflow.com/questions/5578631/how-do-you-stop-reading-integer-from-text-file-when-encounter-negative-integer/5578649#5578649
+  // Just plain wrong. (Anytime you see istream::eof() as a loop condition, the
+  // code is almost certainly wrong.)
+  while (fin.getline(text, 200, '/'))
   {
-    char text[200];
-    fin.getline(text, 200, '/');
     a.day = atoi(text);
     fin.getline(text, 200, ',');
     a.month = atoi(text);
@@ -146,11 +153,19 @@ void fillAct(std::ifstream &fin, activity &a)
   }
 }
 
+void saveCalendar(activity *****&calendar)
+{
+  std::ofstream fout("modified_calendar.txt");
+}
 int main()
 {
   // Initialize Calendar to the count of months in a year
   activity *****calendar = new activity ****[12];
   initCal(calendar);
+  calendar[0][0][0][0] = new activity;
+  cout << getActivities(calendar[0][0][0]);
   resizeActivity(calendar, 0, 0, 0);
+  calendar[0][0][0][1] = new activity;
+  cout << getActivities(calendar[0][0][0]);
   delCal(calendar);
 }

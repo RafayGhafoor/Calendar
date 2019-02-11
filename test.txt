@@ -1,26 +1,4 @@
-calendar[1][17][6] = activity something;
-
-
 17/1,7,13,user49,act0,spill the pendulum,0.38
-
-UserID: user49
-Activity Name: Assignment
-Priority: 0.38
-Duration: 6
-Month: 1
-Day: 17
-
-UserID: user88
-Activity Name: Assignment 
-Priority: 0.20
-Duration: 6
-Month: 1
-Day: 17
-
-
-
-
-
 21/12,2,7,user88,act1,bare the rate,0.75
 6/8,4,13,user49,act2,compare the metal,0.77
 6/8,4,13,user49,act2,compare the metal,0.77
