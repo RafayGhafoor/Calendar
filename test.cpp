@@ -3,8 +3,7 @@
 
 using namespace std;
 
-void Resize(int **&calendar, const int &size)
-{
+void Resize(int **&calendar, const int &size) {
   // Resizes the pointers of the activity
   int **ptr = new int *[size + 1];
   copy(calendar, calendar + size, ptr);
@@ -14,11 +13,11 @@ void Resize(int **&calendar, const int &size)
 
 // can't use const here
 // https://stackoverflow.com/questions/16390294/conversion-from-int-to-const-int
-int getActivities(int **&calendar)
-{
+int getActivities(int **&calendar) {
   // Returns count of the allocated pointers;   used for checking activities
   // existence.
   // Usage Example: getActivities(calendar[0][0][0])
+  cout << "test";
   int act_count = 0;
 
   while (calendar[act_count])
@@ -27,16 +26,8 @@ int getActivities(int **&calendar)
   return act_count;
 }
 
-int main()
-{
-  int **arr = new int *[1];
-
-  for (int i = 0; i < 10; i++)
-  {
-    arr[i] = new int;
-    arr[i][0] = i;
-    // cout << arr[i][0] << std::endl;
-    Resize(arr, getActivities(arr));
-    cout << arr[i][0] << std::endl;
-  }
+int main() {
+  int **arr = new int *[8];
+  int a = 2, b = a, c = a, d = a;
+  cout << getActivities(arr);
 }
