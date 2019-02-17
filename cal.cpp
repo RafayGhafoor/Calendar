@@ -12,15 +12,15 @@ struct activity
   char *user_id, *title;
 };
 
-void lstAct(char *userID, char *start_time, char *end_time);
-void lstImpAct(char userID, char *start_time, char *end_time);
-void lstFreePeriod(char *start_time, char *end_time, int days);
-void lstClashes(char *start_time, char *end_time, char userID1, char userID2);
-void lstFreeSlots(char *start_time, char *end_time, char userID);
+void lstAct(char userID[], char start_time[], char end_time[]);
+void lstImpAct(char userID, char start_time[], char end_time[]);
+void lstFreePeriod(char start_time[], char end_time[], int days);
+void lstClashes(char start_time[], char end_time[], char userID1, char userID2);
+void lstFreeSlots(char start_time[], char end_time[], char userID);
 void getActStats();
 void getCalStats();
 void delUser(char userID);
-void showCal(char *month);
+void showCal(char month[]);
 
 // http://thedeepbluecpp.blogspot.com/2014/01/rule-2-make-all-type-conversions.html
 
