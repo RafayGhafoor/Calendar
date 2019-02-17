@@ -83,6 +83,16 @@ int getActs(activity **&calendar)
   return act_count;
 }
 
+int getIndex(activity **&calendar)
+{
+  int index = 0;
+
+  while (calendar[index])
+    index++;
+
+  return index;
+}
+
 void delCal(activity *****&calendar)
 {
   // A garbage cleaner function for the memory allocated by the calendar.
@@ -104,6 +114,7 @@ void delCal(activity *****&calendar)
           delete[] calendar[i][j][k][l]->title;
           calendar[i][j][k][l] = nullptr;
         }
+
         if (calendar[i][j])
         {
           delete[] calendar[i][j][k];
@@ -125,10 +136,12 @@ void delCal(activity *****&calendar)
 void resizeActs(activity **&calendar)
 {
   // Resizes the pointers of the activity
-  const int size = getActs(calendar);
-  activity **ptr = new activity *[size + 1];
+  const int size = getIndex(calendar);
+  activity **ptr = new activity *[size + 2];
+  // Parameters Source, Source + Size, Destination
   std::copy(calendar, calendar + size, ptr);
   delete[] calendar;
+  calendar = nullptr;
   calendar = ptr;
 }
 
@@ -140,7 +153,7 @@ void fillCal(activity *****&cal, std::ifstream &fin)
   // https://stackoverflow.com/questions/5578631/how-do-you-stop-reading-integer-from-text-file-when-encounter-negative-integer/5578649#5578649
   // Just plain wrong. (Anytime you see istream::eof() as a loop condition, the
   // code is almost certainly wrong.)
-  int index, counter = 0;
+  int index = 0;
   char text[200];
 
   while (fin.getline(text, 200, '/'))
@@ -175,6 +188,10 @@ void fillCal(activity *****&cal, std::ifstream &fin)
 
     // Calendar Filling from here!
 
+    // making room for a new activity
+    resizeActs(
+        cal[a.month][a.day][a.start_time]); // Resize the activity box by 1
+
     // Obtain the size and index of unfilled activities
     index = getActs(cal[a.month][a.day][a.start_time]);
 
@@ -197,12 +214,8 @@ void fillCal(activity *****&cal, std::ifstream &fin)
 
     cal[a.month][a.day][a.start_time][index]->priority = a.priority;
 
-    // cout << getActs(cal[a.month][a.day][a.start_time]) << std::endl;
-
-    resizeActs(cal[a.month][a.day][a.start_time]); // Resize the activity box by 1
-                                                   // making room for a new activity
-
-    cout << getActs(cal[a.month][a.day][a.start_time]);
+    cout << "Details for: " << a.month + 1 << ", " << a.day + 1 << ", "
+         << a.start_time + 1 << std::endl;
   }
 }
 
@@ -223,33 +236,33 @@ void fillCal(activity *****&cal, std::ifstream &fin)
 //     }
 // }
 
-// void saveCal(activity *****&calendar)
-// {
-//   cout << calendar[11][20][1][0]->title << std::endl;
+void saveCal(activity *****&calendar)
+{
 
-// std::ofstream fout("mod_cal.txt");
-// cout << calendar[][];
-// for (int mon = 0; mon < 12; mon++)
-//   for (int day = 0; day < DAYS_IN_MONTHS[mon]; day++)
-//     for (int hr = 0; hr < 24; hr++)
-//       for (int act = 0; calendar[mon][day][hr] &&
-//                         act < getActs(calendar[mon][day][hr]);
-//            act++)
-//       {
-//         cout << calendar[mon][day][hr][act]->title << std::endl;
-//         if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
-//         {
-//           fout << day + 1 << "/";
-//           fout << mon + 1 << ",";
-//           fout << calendar[mon][day][hr][act][0].start_time + 1 << ",";
-//           fout << calendar[mon][day][hr][act][0].end_time + 1 << ",";
-//           fout << calendar[mon][day][hr][act]->user_id << ",";
-//           fout << calendar[mon][day][hr][act]->title << ",";
-//           fout << calendar[mon][day][hr][act]->priority << std::endl;
-//         }
-//       }
-// fout.close();
-// }
+  std::ofstream fout("mod_cal.txt");
+  int act_count = 0;
+  for (int mon = 0; mon < 12; mon++)
+    for (int day = 0; day < DAYS_IN_MONTHS[mon]; day++)
+      for (int hr = 0; hr < 24; hr++)
+        for (int act = 0;
+             calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
+             act++)
+        {
+          cout << calendar[mon][day][hr][act]->title << std::endl;
+          if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
+          {
+            fout << day + 1 << "/";
+            fout << mon + 1 << ",";
+            fout << calendar[mon][day][hr][act][0].start_time + 1 << ",";
+            fout << calendar[mon][day][hr][act][0].end_time + 1 << ",";
+            fout << calendar[mon][day][hr][act]->user_id << ",";
+            fout << "act" << act_count++ << ",";
+            fout << calendar[mon][day][hr][act]->title << ",";
+            fout << calendar[mon][day][hr][act]->priority << std::endl;
+          }
+        }
+  fout.close();
+}
 
 // void list_activity(activity *****&calendar, int stMonth, int stDate,
 //                    int endDate)
@@ -320,6 +333,6 @@ int main()
   initCal(calendar);
   fillCal(calendar, fin);
   // outputCal(calendar);
-  // saveCal(calendar);
+  saveCal(calendar);
   delCal(calendar);
 }

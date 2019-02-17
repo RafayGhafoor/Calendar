@@ -1,1 +1,6 @@
-21/12,2,7,user88,act1,bare the rate,0.75
+17/1,7,13,user49,act0,spill the pendulum,0.38
+6/8,4,13,user49,act1,compare the metal,0.77
+6/8,4,13,user49,act2,compare the metal,0.77
+6/8,4,13,user49,act3,compare the metal,0.77
+6/8,4,13,user49,act4,compare the metal,0.77
+21/12,2,7,user88,act5,bare the rate,0.75
