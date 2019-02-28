@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -27,6 +28,108 @@ activity *****calendar = new activity ****[12];
 const int DAYS_IN_MONTHS[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // http://blog.slickedit.com/2007/11/c-tips-pointers-and-memory-management/
+
+// ****************UTILITY FUNCTIONS {BEGIN}**************************
+
+bool isValidID(char userID[])
+{
+  /*
+    Sanity check for userid.
+
+    Following are the rules that can be generalized from the observed dataset:
+
+    i)  UserID always starts with the string "user"
+    ii) UserID will never exceed 6 characters "userDD", where D represents a
+   digit iii) Digits must come after the string "user"
+
+  */
+  bool idStatus = true;
+  char begin[] = "user"; // userID must begin with 'user'
+
+  int length = strlen(userID);
+
+  // Sanity Check for Rule No. 1
+  for (int i = 0; i < 4 && idStatus; i++)
+    if (begin[i] != userID[i])
+      idStatus = false;
+
+  // Sanity Check for Rule No. 2
+  if (length > 6 || length < 5)
+    idStatus = false;
+
+  // Sanity Check for Rule No. 3
+  for (int i = 4; i < length && idStatus; i++)
+    if (userID[i] < 0 && userID[i] > 9)
+      idStatus = false;
+
+  return idStatus;
+}
+
+bool isValidMonth(int month)
+{
+  // Sanity check for months validity (check is based upon index which will
+  // always be 1 less than the month)
+  if (month < 0 || month > 11)
+    return false;
+  return true;
+}
+
+bool isValidDay(int day)
+{
+  // Max day size is 30 because we will be comparing against month index which
+  // is (n - 1)
+  if (day < 0 || day > 30)
+    return false;
+  return true;
+}
+
+bool isValidPeriod(int start_month, int end_month, int start_day, int end_day)
+{
+  /*
+  A period is only valid if end month will be greater than start month because
+  you can't go back in time :P The end day could also not be greater than start
+  day for the same reason mentioned above.
+  */
+  if (start_month > end_month)
+    return false;
+
+  if (start_month == end_month)
+    if (start_day > end_day)
+      return false;
+
+  return true;
+}
+
+// *************Function overloading, supporting double (for priority) and int
+// array types**************
+int findMax(int arr[], const size_t &size)
+{
+  // Returns maximum number index in the array of integers
+  int max_index = 0;
+  for (size_t i = 0; i < size; i++)
+  {
+    if (arr[max_index] <= arr[i])
+      max_index = i;
+  }
+
+  return max_index;
+}
+
+int findMax(double arr[], const size_t &size)
+{
+  // Returns maximum number index in the array of doubles
+  int max_index = 0;
+
+  for (size_t i = 0; i < size; i++)
+  {
+    if (arr[max_index] <= arr[i])
+      max_index = i;
+  }
+
+  return max_index;
+}
+
+// *************** UTILITY FUNCTIONS {END}**********************
 
 void initCal(activity *****&calendar)
 {
@@ -317,7 +420,7 @@ void dispMonth(int month) { cout << "Hello, World!" << endl; }
 
 void dispFeatures()
 {
-  cout << "Following features are supported by calendar. Please make a "
+  cout << "Following features are supported by calendar. make a "
           "choice.\n\n";
 
   cout << "00 - List all the activities of a user during a time period.\n01 - "
@@ -330,32 +433,29 @@ void dispFeatures()
           "calendar.\n'S' - Show Features Menu.\n'Q' - Exit program.\n";
 }
 
-char *getID()
+void getID(char ID[])
 {
-  char ID[200];
   cout << endl;
   while (1)
   {
-    cout << "Please enter the user ID: ";
+    cout << "Enter the user ID: ";
     cin >> ID;
     if (isValidID(ID))
-      return ID;
+      break;
     else
       cout << "Invalid ID specified." << endl;
   }
-  return ID;
 }
 
 int getMonth()
 {
-  char mon;
+  int mon;
   cout << endl;
   while (1)
   {
-    cout << "Please enter month number: ";
+    cout << "Enter month number: ";
     cin >> mon;
-    mon = ctoi(mon);
-    if (isValidMonth(mon))
+    if (isValidMonth(--mon))
       return mon;
     else
       cout << "Invalid Month specified." << endl;
@@ -365,14 +465,13 @@ int getMonth()
 
 int getDay()
 {
-  char day;
+  int day;
   cout << endl;
   while (1)
   {
-    cout << "Please enter day number: ";
+    cout << "Enter day number: ";
     cin >> day;
-    day = ctoi(day);
-    if (isValidDay(day))
+    if (isValidDay(--day))
       return day;
     else
       cout << "Invalid Day specified." << endl;
@@ -380,18 +479,19 @@ int getDay()
   return day;
 }
 
-int getPeriod(int info[], int size)
+void getPeriod(int info[], int size)
 {
-  cout << "Enter info according to Start Month, End Month, Start Day and End Day.\n\n";
+  cout << "Enter info according to Start Month, End Month, Start Day and End "
+          "Day.\n\n";
   while (1)
   {
     int m_s = getMonth(), m_e = getMonth(), d_s = getDay(), d_e = getDay();
-    if (isValidPeriod(m_s, m_e, d_s, d_e)))
-      {
-        info[0] = m_s;
-        info[1] = m_e, info[2] = d_s, info[3] = d_e;
-        break;
-      }
+    if (isValidPeriod(--m_s, --m_e, --d_s, --d_e))
+    {
+      info[0] = m_s;
+      info[1] = m_e, info[2] = d_s, info[3] = d_e;
+      break;
+    }
   }
 }
 
@@ -422,7 +522,7 @@ void displayMenu()
 
   char s;
 
-  while (std::cin >> inp)
+  while (cin >> inp)
   {
     if (inp.length() != 1)
     {
@@ -433,8 +533,10 @@ void displayMenu()
     s = inp[0];
     if (s == '0')
     {
-      char user[] = "user49";
-      lstAct(user, 0, 16, 20);
+      char user[200];
+      getID(user);
+      int m = getMonth(), d = getDay(), d1 = getDay();
+      lstAct(user, m, d, d1);
     }
 
     else if (s == '1')
@@ -478,13 +580,13 @@ void displayMenu()
 
     else if (toupper(s) == 'Q')
     {
-      cout << "GoodBye!\n"
+      cout << "\n**** Good Bye! ****\n"
            << endl;
       break;
     }
 
     else
-      cout << "Invalid option entered. Please try again\n";
+      cout << "Invalid option Entered. try again\n";
     cout << ">>> ";
   }
 }
@@ -496,6 +598,5 @@ int main()
   initCal(calendar);
   fillCal(calendar, fin);
   displayMenu();
-  outputCal(calendar);
   delCal(calendar);
 }
