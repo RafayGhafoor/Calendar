@@ -264,39 +264,33 @@ void saveCal(activity *****&calendar,
   fout.close();
 }
 
-void lstAct(char userID[], int start_mon = 0, int start_day = 0,
-            int end_mon = 11, int end_day = 30)
+void lstAct(char userID[], int mon = 0, int start_day = 0, int end_day = 30)
 {
+  cout << "Displaying information for [" << userID << ']' << endl;
   int act_count = 0;
-  for (int mon = start_mon; mon < end_mon; mon++)
-    for (int day = start_day; day < end_day; day++)
-      for (int hr = 0; hr < 24; hr++)
-        if (calendar[mon][day])
-          for (int act = 0;
-               calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
-               act++)
-          {
-            cout << "-------------------------------------------------" << endl;
-            if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
-            {
-              if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
-              {
+  for (int day = start_day; day < end_day; day++)
+    for (int hr = 0; hr < 24; hr++)
+      for (int act = 0;
+           calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
+           act++)
+      {
+        if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
+        {
 
-                cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
+          cout << "-------------------------------------------------" << endl;
 
-                cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
-                     << calendar[mon][day][hr][act][0].start_time + 1 << " - "
-                     << calendar[mon][day][hr][act][0].end_time + 1 << ')'
-                     << endl;
+          cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
 
-                cout << "Name: " << calendar[mon][day][hr][act]->title << endl;
+          cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
+               << calendar[mon][day][hr][act][0].start_time + 1 << " - "
+               << calendar[mon][day][hr][act][0].end_time + 1 << ')' << endl;
 
-                cout << "Priority: " << calendar[mon][day][hr][act]->priority
-                     << endl
-                     << endl;
-              }
-            }
-          }
+          cout << "Name: " << calendar[mon][day][hr][act]->title << endl;
+
+          cout << "Priority: " << calendar[mon][day][hr][act]->priority << endl
+               << endl;
+        }
+      }
 }
 
 void lstImpAct(char userID, int st_time, int end_time)
@@ -334,6 +328,71 @@ void dispFeatures()
           "month.\n06 - Calendar Stats for a whole year.\n07 - Remove a user "
           "from calendar.\n08 - Save the calendar.\n09 - Display month of a "
           "calendar.\n'S' - Show Features Menu.\n'Q' - Exit program.\n";
+}
+
+char *getID()
+{
+  char ID[200];
+  cout << endl;
+  while (1)
+  {
+    cout << "Please enter the user ID: ";
+    cin >> ID;
+    if (isValidID(ID))
+      return ID;
+    else
+      cout << "Invalid ID specified." << endl;
+  }
+  return ID;
+}
+
+int getMonth()
+{
+  char mon;
+  cout << endl;
+  while (1)
+  {
+    cout << "Please enter month number: ";
+    cin >> mon;
+    mon = ctoi(mon);
+    if (isValidMonth(mon))
+      return mon;
+    else
+      cout << "Invalid Month specified." << endl;
+  }
+  return mon;
+}
+
+int getDay()
+{
+  char day;
+  cout << endl;
+  while (1)
+  {
+    cout << "Please enter day number: ";
+    cin >> day;
+    day = ctoi(day);
+    if (isValidDay(day))
+      return day;
+    else
+      cout << "Invalid Day specified." << endl;
+  }
+  return day;
+}
+
+int getPeriod(int info[], int size)
+{
+  cout << "Enter info according to Start Month, End Month, Start Day and End Day.\n\n";
+  while (1)
+  {
+    int m_s = getMonth(), m_e = getMonth(), d_s = getDay(), d_e = getDay();
+    if (isValidPeriod(m_s, m_e, d_s, d_e)))
+      {
+        info[0] = m_s;
+        info[1] = m_e, info[2] = d_s, info[3] = d_e;
+        break;
+      }
+  }
 }
 
 void displayMenu()
@@ -374,8 +433,8 @@ void displayMenu()
     s = inp[0];
     if (s == '0')
     {
-      char user[] = "user48";
-      lstAct(user);
+      char user[] = "user49";
+      lstAct(user, 0, 16, 20);
     }
 
     else if (s == '1')
@@ -437,5 +496,6 @@ int main()
   initCal(calendar);
   fillCal(calendar, fin);
   displayMenu();
+  outputCal(calendar);
   delCal(calendar);
 }
