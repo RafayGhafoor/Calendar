@@ -4,23 +4,16 @@
 #include <iostream>
 
 using std::cout;
+using std::endl;
 
-struct activity {
+struct activity
+{
   int month, day, start_time, end_time;
   float priority;
   char *user_id, *title;
 };
 
-void lstAct(char userID[], char start_time[], char end_time[]);
-void lstImpAct(char userID, char start_time[], char end_time[]);
-void lstFreePeriod(char start_time[], char end_time[], int days);
-void lstClashes(char start_time[], char end_time[], char userID1, char userID2);
-void lstFreeSlots(char start_time[], char end_time[], char userID);
-void getActStats();
-void getCalStats();
-void delUser(char userID);
-void showCal(char month[]);
-
+activity *****calendar = new activity ****[12];
 // http://thedeepbluecpp.blogspot.com/2014/01/rule-2-make-all-type-conversions.html
 
 // Type conversions should be isolated in their own line, which should consist
@@ -35,7 +28,8 @@ const int DAYS_IN_MONTHS[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // http://blog.slickedit.com/2007/11/c-tips-pointers-and-memory-management/
 
-void initCal(activity *****&calendar) {
+void initCal(activity *****&calendar)
+{
   /* Initializes the calendar having the following format:
 Months as a base for pointers containing quad-pointers; pointing towards
 > Days > Hours > Activities > Activities Container.
@@ -53,10 +47,12 @@ Constants Representation (in loops:
   // and wherever (time in hours > activities > activities container) they point
   // will always be the ith index of DAYS_IN_MONTHS
 
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i < 12; i++)
+  {
     calendar[i] = new activity ***[DAYS_IN_MONTHS[i]];
 
-    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++) {
+    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
+    {
       calendar[i][j] = new activity **[24];
 
       for (int k = 0; k < 24; k++)
@@ -65,7 +61,8 @@ Constants Representation (in loops:
   }
 }
 
-int getActs(activity **&calendar) {
+int getActs(activity **&calendar)
+{
   // Returns count of the allocated pointers;   used for checking activities
   // existence.
   // Usage Example: getActs(calendar[0][0][0])
@@ -78,7 +75,8 @@ int getActs(activity **&calendar) {
   return act_count;
 }
 
-int getIndex(activity **&calendar) {
+int getIndex(activity **&calendar)
+{
   int index = 0;
 
   while (calendar[index])
@@ -87,24 +85,30 @@ int getIndex(activity **&calendar) {
   return index;
 }
 
-void delCal(activity *****&calendar) {
+void delCal(activity *****&calendar)
+{
   // A garbage cleaner function for the memory allocated by the calendar.
 
   // | The grantation of rights comes with a responsibility to bear. Treat
   // pointers with the respect you would treat a firearm — and you may not find
   // yourself shot in your own foot.| #1
 
-  for (int i = 0; i < 12; i++) {
-    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++) {
-      for (int k = 0; k < 24; k++) {
+  for (int i = 0; i < 12; i++)
+  {
+    for (int j = 0; j < DAYS_IN_MONTHS[i]; j++)
+    {
+      for (int k = 0; k < 24; k++)
+      {
         for (int l = 0; calendar[i][j][k] && l < getActs(calendar[i][j][k]);
-             l++) {
+             l++)
+        {
           delete[] calendar[i][j][k][l]->user_id;
           delete[] calendar[i][j][k][l]->title;
           calendar[i][j][k][l] = nullptr;
         }
 
-        if (calendar[i][j]) {
+        if (calendar[i][j])
+        {
           delete[] calendar[i][j][k];
           calendar[i][j][k] = nullptr;
         }
@@ -121,7 +125,8 @@ void delCal(activity *****&calendar) {
   calendar = nullptr;
 }
 
-void resizeActs(activity **&calendar) {
+void resizeActs(activity **&calendar)
+{
   // Resizes the pointers of the activity
   const int size = getIndex(calendar);
   activity **ptr = new activity *[size + 2];
@@ -132,7 +137,8 @@ void resizeActs(activity **&calendar) {
   calendar = ptr;
 }
 
-void fillCal(activity *****&cal, std::ifstream &fin) {
+void fillCal(activity *****&cal, std::ifstream &fin)
+{
 
   // https://stackoverflow.com/questions/40303500/c-how-to-read-a-line-with-delimiter-until-the-end-of-each-line
 
@@ -142,7 +148,8 @@ void fillCal(activity *****&cal, std::ifstream &fin) {
   int index = 0;
   char text[200];
 
-  while (fin.getline(text, 200, '/')) {
+  while (fin.getline(text, 200, '/'))
+  {
     activity a;
     a.day = atoi(text);
     fin.getline(text, 200, ',');
@@ -169,7 +176,7 @@ void fillCal(activity *****&cal, std::ifstream &fin) {
     fin.getline(text, 200, '\n');
 
     a.priority = atof(text);
-    a.month--, a.day--, a.start_time--, a.end_time--;
+    a.month--, a.day--;
 
     // Calendar Filling from here!
 
@@ -192,7 +199,6 @@ void fillCal(activity *****&cal, std::ifstream &fin) {
         new char[strlen(a.user_id) + 1];
 
     strcpy(cal[a.month][a.day][a.start_time][index]->user_id, a.user_id);
-
     cal[a.month][a.day][a.start_time][index]->start_time = a.start_time;
 
     cal[a.month][a.day][a.start_time][index]->end_time = a.end_time;
@@ -201,45 +207,50 @@ void fillCal(activity *****&cal, std::ifstream &fin) {
   }
 }
 
-void outputCal(activity *****&calendar) {
+void outputCal(activity *****&calendar)
+{
   int act_count = 0;
   for (int mon = 0; mon < 12; mon++)
     for (int day = 0; day < DAYS_IN_MONTHS[mon]; day++)
       for (int hr = 0; hr < 24; hr++)
         for (int act = 0;
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
-             act++) {
-          cout << "-------------------------------------------------"
-               << std::endl;
-          if (calendar[mon][day][hr] && calendar[mon][day][hr][act]) {
-            cout << "Activity Number [" << act_count++ + 1 << ']' << std::endl;
+             act++)
+        {
+          cout << "-------------------------------------------------" << endl;
+          if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
+          {
+            cout << "UserID: " << calendar[mon][day][hr][act]->user_id << endl;
+            cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
 
             cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
                  << calendar[mon][day][hr][act][0].start_time + 1 << " - "
-                 << calendar[mon][day][hr][act][0].end_time + 1 << ')'
-                 << std::endl;
+                 << calendar[mon][day][hr][act][0].end_time + 1 << ')' << endl;
 
-            cout << "Name: " << calendar[mon][day][hr][act]->title << std::endl;
+            cout << "Name: " << calendar[mon][day][hr][act]->title << endl;
 
             cout << "Priority: " << calendar[mon][day][hr][act]->priority
-                 << std::endl
-                 << std::endl;
+                 << endl
+                 << endl;
           }
         }
 }
 
-void saveCal(activity *****&calendar) {
+void saveCal(activity *****&calendar,
+             std::string filename = "modified_cal.txt")
+{
 
-  std::ofstream fout("mod_cal.txt");
+  std::ofstream fout(filename);
   int act_count = 0;
   for (int mon = 0; mon < 12; mon++)
     for (int day = 0; day < DAYS_IN_MONTHS[mon]; day++)
       for (int hr = 0; hr < 24; hr++)
         for (int act = 0;
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
-             act++) {
-          cout << calendar[mon][day][hr][act]->title << std::endl;
-          if (calendar[mon][day][hr] && calendar[mon][day][hr][act]) {
+             act++)
+        {
+          if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
+          {
             fout << day + 1 << "/";
             fout << mon + 1 << ",";
             fout << calendar[mon][day][hr][act][0].start_time + 1 << ",";
@@ -247,80 +258,184 @@ void saveCal(activity *****&calendar) {
             fout << calendar[mon][day][hr][act]->user_id << ",";
             fout << "act" << act_count++ << ",";
             fout << calendar[mon][day][hr][act]->title << ",";
-            fout << calendar[mon][day][hr][act]->priority << std::endl;
+            fout << calendar[mon][day][hr][act]->priority << endl;
           }
         }
   fout.close();
 }
 
-// void list_activity(activity *****&calendar, int stMonth, int stDate,
-//                    int endDate)
-// {
-//   for (int i = 0; i < 24; i++)
-//   {
-//     for (int j = 0; calendar[stMonth][stDate][i][j]; j++)
-//     {
-//       cout << "User Id: " << calendar[stMonth][stDate][i][j][0].user_id <<
-//       endl; cout << "Activity Name: " <<
-//       calendar[stMonth][stDate][i][j].title
-//            << endl;
-//       cout << "Avtivity
-//           Priority : " << calendar[stMonth][stDate][i][j].priority
-//            << endl;
-//       cout << "Start Time of activity: " <<
-//       calendar[stMonth][stDate][i][j].day
-//            << "/" << calendar[stMonth][stDate][i][j].month << endl;
-//       cout << "Activity Period: " << calendar[stMonth][stDate][i][j].period
-//            << endl;
-//     }
-//   }
-// }
+void lstAct(char userID[], int start_mon = 0, int start_day = 0,
+            int end_mon = 11, int end_day = 30)
+{
+  int act_count = 0;
+  for (int mon = start_mon; mon < end_mon; mon++)
+    for (int day = start_day; day < end_day; day++)
+      for (int hr = 0; hr < 24; hr++)
+        if (calendar[mon][day])
+          for (int act = 0;
+               calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
+               act++)
+          {
+            cout << "-------------------------------------------------" << endl;
+            if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
+            {
+              if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
+              {
 
-// void displayMenu()
-// {
-//   char s;
+                cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
 
-//   while (std::cin >> s)
-//   {
-//     if (s == '1')
-//       listAct();
+                cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
+                     << calendar[mon][day][hr][act][0].start_time + 1 << " - "
+                     << calendar[mon][day][hr][act][0].end_time + 1 << ')'
+                     << endl;
 
-//     else if (s == '2')
-//       listimpAct();
+                cout << "Name: " << calendar[mon][day][hr][act]->title << endl;
 
-//     else if (s == '3')
-//       listFreePeriod();
+                cout << "Priority: " << calendar[mon][day][hr][act]->priority
+                     << endl
+                     << endl;
+              }
+            }
+          }
+}
 
-//     else if (s == '4')
-//       listClashAct();
+void lstImpAct(char userID, int st_time, int end_time)
+{
+  cout << "Hello, World!" << endl;
+}
+void lstFreePeriod(int st_time, int end_time, int days)
+{
+  cout << "Hello, World!" << endl;
+}
+void lstClashes(int st_time, int end_time, char userID1, char userID2)
+{
+  cout << "Hello, World!" << endl;
+}
+void lstFreeSlots(int st_time, int end_time, char userID)
+{
+  cout << "Hello, World!" << endl;
+}
+void getActStats() { cout << "Hello, World!" << endl; }
+void getCalStats() { cout << "Hello, World!" << endl; }
+void delUser(char userID) { cout << "Hello, World!" << endl; }
+void showCal(char month[]) { cout << "Hello, World!" << endl; }
+void dispMonth(int month) { cout << "Hello, World!" << endl; }
 
-//     else if (s == '5')
-//       listFreeSlots();
+void dispFeatures()
+{
+  cout << "Following features are supported by calendar. Please make a "
+          "choice.\n\n";
 
-//     else if (s == '6')
-//       getActStats();
+  cout << "00 - List all the activities of a user during a time period.\n01 - "
+          "List the 5 most important activities of a given user during "
+          "time.\n02 - Longest free period time.\n03 - Clashing activities of "
+          "a pair of users during a time period.\n04 - List all hour slots of "
+          "a user that are free.\n05 - Display activity stats of a given "
+          "month.\n06 - Calendar Stats for a whole year.\n07 - Remove a user "
+          "from calendar.\n08 - Save the calendar.\n09 - Display month of a "
+          "calendar.\n'S' - Show Features Menu.\n'Q' - Exit program.\n";
+}
 
-//     else if (s == '7')
-//       getCalStats();
+void displayMenu()
+{
+  cout << R"(
+########################################################
+########################################################
+########################################################
+#              _______________________                 #
+#                W E L C O M E  T O                    #
+#         >       |C A L E N D A R|         <          #
+#              -----------------------                 #
+########################################################
+########################################################
+########################################################
+########################################################
+########################################################
+########################################################
+)" << endl
+       << endl;
 
-//     else if (s == '8')
-//       delUser();
+  dispFeatures();
+  cout << endl
+       << endl;
+  cout << ">>> ";
+  std::string inp;
 
-//     else if (s == '9')
-//       saveCal();
+  char s;
 
-//     else if (s == '0')
-//       showCal();
-//   }
-// }
+  while (std::cin >> inp)
+  {
+    if (inp.length() != 1)
+    {
+      cout << "Expected single character\n>>> ";
+      continue;
+    }
 
-int main() {
+    s = inp[0];
+    if (s == '0')
+    {
+      char user[] = "user48";
+      lstAct(user);
+    }
+
+    else if (s == '1')
+      cout << "test" << endl;
+    // lstimpAct();
+
+    else if (s == '2')
+      cout << "test" << endl;
+    // lstFreePeriod();
+
+    else if (s == '3')
+      cout << "test" << endl;
+    // lstClashes();
+
+    else if (s == '4')
+      cout << "test" << endl;
+    // lstFreeSlots();
+
+    else if (s == '5')
+      cout << "test" << endl;
+    // getActStats();
+
+    else if (s == '6')
+      cout << "test" << endl;
+    // getCalStats();
+
+    else if (s == '7')
+      cout << "test" << endl;
+    // delUser();
+
+    else if (s == '8')
+      cout << "test" << endl;
+    // saveCal();
+
+    else if (s == '9')
+      cout << "test" << endl;
+    // dispMonth();
+
+    else if (toupper(s) == 'S')
+      dispFeatures();
+
+    else if (toupper(s) == 'Q')
+    {
+      cout << "GoodBye!\n"
+           << endl;
+      break;
+    }
+
+    else
+      cout << "Invalid option entered. Please try again\n";
+    cout << ">>> ";
+  }
+}
+
+int main()
+{
   // Initialize Calendar to the count of months in a year
-  std::ifstream fin("test.txt");
-  activity *****calendar = new activity ****[12];
+  std::ifstream fin("calendar1.dat");
   initCal(calendar);
   fillCal(calendar, fin);
-  // outputCal(calendar);
-  outputCal(calendar);
+  displayMenu();
   delCal(calendar);
 }
