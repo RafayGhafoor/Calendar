@@ -14,6 +14,24 @@ struct activity
   char *user_id, *title;
 };
 
+void displayAct(activity *&info, int mon, int day, int &act_count)
+{
+  cout << "-------------------------------------------------" << endl;
+  if (info->user_id && info->title)
+  {
+    cout << "UserID: " << info->user_id << endl;
+    cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
+
+    cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
+         << info->start_time + 1 << " - " << info->end_time + 1 << ')' << endl;
+
+    cout << "Name: " << info->title << endl;
+
+    cout << "Priority: " << info->priority << endl
+         << endl;
+  }
+}
+
 activity *****calendar = new activity ****[12];
 // http://thedeepbluecpp.blogspot.com/2014/01/rule-2-make-all-type-conversions.html
 
@@ -383,130 +401,137 @@ void lstAct(char userID[], int st_mon = 0, int end_mon = 11, int start_day = 0,
         for (int act = 0;
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
              act++)
+          if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
+            displayAct(calendar[mon][day][hr][act], mon, day, act_count);
+  }
+}
+
+void lstImpAct(char userID[], int st_mon = 0, int end_mon = 11,
+               int start_day = 0, int end_day = 30)
+{
+
+  cout << "Displaying 5 Important Activities for [" << userID << ']' << endl;
+  int act_count = 0;
+  for (int mon = st_mon; mon <= end_mon; mon++)
+  {
+    int day_threshold = DAYS_IN_MONTHS[mon];
+    if (mon == end_mon)
+      day_threshold = end_day;
+
+    for (int day = start_day; day < day_threshold; day++)
+      for (int hr = 0; hr < 24; hr++)
+        for (int act = 0;
+             calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
+             act++)
         {
           if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
-          {
-
-            cout << "-------------------------------------------------" << endl;
-
-            cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
-
-            cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
-                 << calendar[mon][day][hr][act][0].start_time + 1 << " - "
-                 << calendar[mon][day][hr][act][0].end_time + 1 << ')' << endl;
-
-            cout << "Name: " << calendar[mon][day][hr][act]->title << endl;
-
-            cout << "Priority: " << calendar[mon][day][hr][act]->priority
-                 << endl
-                 << endl;
-          }
+            displayAct(calendar[mon][day][hr][act], mon, day, act_count);
         }
-  }
-}
 
-void lstImpAct(char userID, int st_time, int end_time)
-{
-  cout << "To be implemented!" << endl;
-}
-void lstFreePeriod(int st_time, int end_time, int days)
-{
-  cout << "To be implemented!" << endl;
-}
-void lstClashes(int st_time, int end_time, char userID1, char userID2)
-{
-  cout << "To be implemented!" << endl;
-}
-void lstFreeSlots(int st_time, int end_time, char userID)
-{
-  cout << "To be implemented!" << endl;
-}
-void getActStats() { cout << "To be implemented!" << endl; }
-void getCalStats() { cout << "To be implemented!" << endl; }
-void delUser(char userID) { cout << "To be implemented!" << endl; }
-void showCal(char month[]) { cout << "To be implemented!" << endl; }
-void dispMonth(int month) { cout << "To be implemented!" << endl; }
-
-void dispFeatures()
-{
-  cout << "Following features are supported by calendar. make a "
-          "choice.\n\n";
-
-  cout << "00 - List all the activities of a user during a time period.\n01 - "
-          "List the 5 most important activities of a given user during "
-          "time.\n02 - Longest free period time.\n03 - Clashing activities of "
-          "a pair of users during a time period.\n04 - List all hour slots of "
-          "a user that are free.\n05 - Display activity stats of a given "
-          "month.\n06 - Calendar Stats for a whole year.\n07 - Remove a user "
-          "from calendar.\n08 - Save the calendar.\n09 - Display month of a "
-          "calendar.\n'S' - Show Features Menu.\n'Q' - Exit program.\n";
-}
-
-void getID(char ID[])
-{
-  cout << endl;
-  while (1)
-  {
-    cout << "Enter the user ID: ";
-    cin >> ID;
-    if (isValidID(ID))
-      break;
-    else
-      cout << "Invalid ID specified." << endl;
-  }
-}
-
-int getMonth()
-{
-  int mon;
-  cout << endl;
-  while (1)
-  {
-    cout << "Enter month number: ";
-    cin >> mon;
-    if (isValidMonth(--mon))
-      return mon;
-    else
-      cout << "Invalid Month specified." << endl;
-  }
-  return mon;
-}
-
-int getDay()
-{
-  int day;
-  cout << endl;
-  while (1)
-  {
-    cout << "Enter day number: ";
-    cin >> day;
-    if (isValidDay(--day))
-      return day;
-    else
-      cout << "Invalid Day specified." << endl;
-  }
-  return day;
-}
-
-void getPeriod(int info[], int size)
-{
-  cout << "Enter info according to Start Month, End Month, Start Day and End "
-          "Day.\n\n";
-  while (1)
-  {
-    int m_s = getMonth(), m_e = getMonth(), d_s = getDay(), d_e = getDay();
-    if (isValidPeriod(--m_s, --m_e, --d_s, --d_e))
+    void lstFreePeriod(int st_time, int end_time, int days)
     {
-      info[0] = m_s;
-      info[1] = m_e, info[2] = d_s, info[3] = d_e;
-      break;
+      cout << "To be implemented!" << endl;
     }
-  }
-}
+    void lstClashes(int st_time, int end_time, char userID1, char userID2)
+    {
+      cout << "To be implemented!" << endl;
+    }
+    void lstFreeSlots(int st_time, int end_time, char userID)
+    {
+      cout << "To be implemented!" << endl;
+    }
+    void getActStats() { cout << "To be implemented!" << endl; }
+    void getCalStats() { cout << "To be implemented!" << endl; }
+    void delUser(char userID) { cout << "To be implemented!" << endl; }
+    void showCal(char month[]) { cout << "To be implemented!" << endl; }
+    void dispMonth(int month) { cout << "To be implemented!" << endl; }
 
-void displayMenu()
-{
-  cout << R"(
+    void dispFeatures()
+    {
+      cout << "Following features are supported by calendar. make a "
+              "choice.\n\n";
+
+      cout
+          << "00 - List all the activities of a user during a time period.\n01 "
+             "- "
+             "List the 5 most important activities of a given user during "
+             "time.\n02 - Longest free period time.\n03 - Clashing activities "
+             "of "
+             "a pair of users during a time period.\n04 - List all hour slots "
+             "of "
+             "a user that are free.\n05 - Display activity stats of a given "
+             "month.\n06 - Calendar Stats for a whole year.\n07 - Remove a "
+             "user "
+             "from calendar.\n08 - Save the calendar.\n09 - Display month of a "
+             "calendar.\n'S' - Show Features Menu.\n'Q' - Exit program.\n";
+    }
+
+    void getID(char ID[])
+    {
+      cout << endl;
+      while (1)
+      {
+        cout << "Enter the user ID: ";
+        cin >> ID;
+        if (isValidID(ID))
+          break;
+        else
+          cout << "Invalid ID specified." << endl;
+      }
+    }
+
+    int getMonth()
+    {
+      int mon;
+      cout << endl;
+      while (1)
+      {
+        cout << "Enter month number: ";
+        cin >> mon;
+        if (isValidMonth(--mon))
+          return mon;
+        else
+          cout << "Invalid Month specified." << endl;
+      }
+      return mon;
+    }
+
+    int getDay()
+    {
+      int day;
+      cout << endl;
+      while (1)
+      {
+        cout << "Enter day number: ";
+        cin >> day;
+        if (isValidDay(--day))
+          return day;
+        else
+          cout << "Invalid Day specified." << endl;
+      }
+      return day;
+    }
+
+    void getPeriod(int info[], int size)
+    {
+      cout << "Enter info according to Start Month, End Month, Start Day and "
+              "End "
+              "Day.\n\n";
+      while (1)
+      {
+        int m_s = getMonth(), m_e = getMonth(), d_s = getDay(), d_e = getDay();
+        if (isValidPeriod(--m_s, --m_e, --d_s, --d_e))
+        {
+          info[0] = m_s;
+          info[1] = m_e, info[2] = d_s, info[3] = d_e;
+          break;
+        }
+      }
+    }
+
+    void displayMenu()
+    {
+      cout << R"(
 ########################################################
 ########################################################
 ########################################################
@@ -520,93 +545,92 @@ void displayMenu()
 ########################################################
 ########################################################
 ########################################################
-)" << endl
-       << endl;
+)" << endl << endl;
 
-  dispFeatures();
-  cout << endl
-       << endl;
-  cout << ">>> ";
-  std::string inp;
-
-  char s;
-
-  while (cin >> inp)
-  {
-    if (inp.length() != 1)
-    {
-      cout << "Expected single character\n>>> ";
-      continue;
-    }
-
-    s = inp[0];
-    if (s == '0')
-    {
-      char user[200];
-      getID(user);
-      int m = getMonth(), m1 = getMonth(), d = getDay(), d1 = getDay();
-      lstAct(user, m, m1, d, d1);
-    }
-
-    else if (s == '1')
-      cout << "To be implemented!" << endl;
-    // lstimpAct();
-
-    else if (s == '2')
-      cout << "To be implemented!" << endl;
-    // lstFreePeriod();
-
-    else if (s == '3')
-      cout << "To be implemented!" << endl;
-    // lstClashes();
-
-    else if (s == '4')
-      cout << "To be implemented!" << endl;
-    // lstFreeSlots();
-
-    else if (s == '5')
-      cout << "To be implemented!" << endl;
-    // getActStats();
-
-    else if (s == '6')
-      cout << "To be implemented!" << endl;
-    // getCalStats();
-
-    else if (s == '7')
-      cout << "To be implemented!" << endl;
-    // delUser();
-
-    else if (s == '8')
-      cout << "To be implemented!" << endl;
-    // saveCal();
-
-    else if (s == '9')
-      cout << "To be implemented!" << endl;
-    // dispMonth();
-
-    else if (toupper(s) == 'S')
       dispFeatures();
-
-    else if (toupper(s) == 'Q')
-    {
-      cout << "\n**** Good Bye! ****\n"
+      cout << endl
            << endl;
-      break;
+      cout << ">>> ";
+      std::string inp;
+
+      char s;
+
+      while (cin >> inp)
+      {
+        if (inp.length() != 1)
+        {
+          cout << "Expected single character\n>>> ";
+          continue;
+        }
+
+        s = inp[0];
+        if (s == '0')
+        {
+          char user[200];
+          getID(user);
+          int m = getMonth(), m1 = getMonth(), d = getDay(), d1 = getDay();
+          lstAct(user, m, m1, d, d1);
+        }
+
+        else if (s == '1')
+          cout << "To be implemented!" << endl;
+        // lstimpAct();
+
+        else if (s == '2')
+          cout << "To be implemented!" << endl;
+        // lstFreePeriod();
+
+        else if (s == '3')
+          cout << "To be implemented!" << endl;
+        // lstClashes();
+
+        else if (s == '4')
+          cout << "To be implemented!" << endl;
+        // lstFreeSlots();
+
+        else if (s == '5')
+          cout << "To be implemented!" << endl;
+        // getActStats();
+
+        else if (s == '6')
+          cout << "To be implemented!" << endl;
+        // getCalStats();
+
+        else if (s == '7')
+          cout << "To be implemented!" << endl;
+        // delUser();
+
+        else if (s == '8')
+          cout << "To be implemented!" << endl;
+        // saveCal();
+
+        else if (s == '9')
+          cout << "To be implemented!" << endl;
+        // dispMonth();
+
+        else if (toupper(s) == 'S')
+          dispFeatures();
+
+        else if (toupper(s) == 'Q')
+        {
+          cout << "\n**** Good Bye! ****\n"
+               << endl;
+          break;
+        }
+
+        else
+          cout << "Invalid option Entered. try again\n";
+        cout << ">>> ";
+      }
     }
 
-    else
-      cout << "Invalid option Entered. try again\n";
-    cout << ">>> ";
-  }
-}
-
-int main()
-{
-  // Initialize Calendar to the count of months in a year
-  std::ifstream fin("calendar1.dat");
-  initCal(calendar);
-  fillCal(calendar, fin);
-  // outputCal(calendar);
-  displayMenu();
-  delCal(calendar);
-}
+    int main()
+    {
+      // Initialize Calendar to the count of months in a year
+      std::ifstream fin("calendar1.dat");
+      initCal(calendar);
+      fillCal(calendar, fin);
+      // outputCal(calendar);
+      displayMenu();
+      delCal(calendar);
+    }
