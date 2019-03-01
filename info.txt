@@ -1,0 +1,5 @@
+total number of activities
+average number of activities per day (month as input)
+busiest day of month
+number of activities in that (busiest) day
+most important day
