@@ -196,16 +196,6 @@ int getActs(activity **&calendar)
   return act_count;
 }
 
-int getIndex(activity **&calendar)
-{
-  int index = 0;
-
-  while (calendar[index])
-    index++;
-
-  return index;
-}
-
 void delCal(activity *****&calendar)
 {
   // A garbage cleaner function for the memory allocated by the calendar.
@@ -249,7 +239,7 @@ void delCal(activity *****&calendar)
 void resizeActs(activity **&calendar)
 {
   // Resizes the pointers of the activity
-  const int size = getIndex(calendar);
+  const int size = getActs(calendar);
   activity **ptr = new activity *[size + 2];
   // Parameters Source, Source + Size, Destination
   std::copy(calendar, calendar + size, ptr);
