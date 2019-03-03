@@ -301,6 +301,8 @@ void fillCal(activity *****&cal, std::ifstream &fin)
 
     activity *myCal = cal[a.month][a.day][a.start_time][index];
     // Put title into calendar
+    myCal->month = a.month;
+    myCal->day = a.day;
     myCal->title = new char[strlen(a.title) + 1];
     strcpy(myCal->title, a.title);
     myCal->user_id = new char[strlen(a.user_id) + 1];
@@ -324,8 +326,8 @@ void outputCal(activity *****&calendar)
             displayAct(calendar[mon][day][hr][act], mon, day, act_count);
 }
 
-void saveCal(activity *****&calendar,
-             std::string filename = "modified_cal.txt")
+std::string saveCal(activity *****&calendar,
+                    std::string filename = "modified_cal.txt")
 {
 
   std::ofstream fout(filename);
@@ -336,8 +338,8 @@ void saveCal(activity *****&calendar,
         for (int act = 0;
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
              act++)
-        {
-          if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
+
+          if (calendar[mon][day][hr][act])
           {
             activity *cal = calendar[mon][day][hr][act];
             fout << day + 1 << "/";
@@ -349,8 +351,8 @@ void saveCal(activity *****&calendar,
             fout << cal->title << ",";
             fout << cal->priority << endl;
           }
-        }
   fout.close();
+  return filename;
 }
 
 void lstAct(char userID[], int st_mon = 0, int end_mon = 11, int start_day = 0,
@@ -378,14 +380,9 @@ void lstAct(char userID[], int st_mon = 0, int end_mon = 11, int start_day = 0,
 void lstImpAct(char userID[], int st_mon = 0, int end_mon = 11,
                int start_day = 0, int end_day = 30)
 {
-  int mon_lst[100], day_lst[100], hr_lst[100], act_lst[100];
-  float priority_lst[100];
-  int mon_count = 0, day_count = 0, hour_count = 0, act_track = 0,
-      priority_count = 0;
-
   cout << "Displaying 5 Important Activities for [" << userID << ']' << endl;
-
-  int act_count = 0;
+  activity *info[100];
+  int act_count = 0, info_c;
 
   for (int mon = st_mon; mon <= end_mon; mon++)
   {
@@ -398,37 +395,26 @@ void lstImpAct(char userID[], int st_mon = 0, int end_mon = 11,
         for (int act = 0;
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
              act++)
-        {
+
           if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
-          {
-            mon_lst[mon_count++] = mon;
-            day_lst[day_count++] = day;
-            hr_lst[hour_count++] = hr;
-            act_lst[act_track++] = act;
-            priority_lst[priority_count++] =
-                calendar[mon][day][hr][act]->priority;
-          }
-          // displayAct(calendar[mon][day][hr][act], mon, day, act_count);
-        }
+            info[info_c++] = calendar[mon][day][hr][act];
   }
 
-  int *generated_indexes = new int[priority_count];
-  float *temp = new float[priority_count];
-
-  for (int i = 0; i < priority_count; i++)
-    temp[i] = priority_lst[i];
-
-  findMax(temp, generated_indexes, priority_count);
-
-  for (int i = 0; i < priority_count; i++)
+  for (int i = 0; i < info_c; i++)
   {
-    int ind = generated_indexes[i];
-    cout << priority_lst[i] << endl;
-    // displayAct(calendar[mon_lst[ind]][day_lst[ind]][hr_lst[ind]][i],
-    //            mon_lst[ind], day_lst[ind], i);
+    int max_ind = 0;
+
+    for (int j = i; j < info_c; j++)
+      if (info[max_ind]->priority <= info[j]->priority)
+        max_ind = j;
+    std::swap(info[max_ind], info[i]);
   }
-  delete[] temp;
-  delete[] generated_indexes;
+
+  for (int i = 0, t = 1; t <= 5; i++)
+  {
+    if (info[i]->priority > 0)
+      displayAct(info[i], info[i]->month, info[i]->day, t);
+  }
 }
 
 void lstFreePeriod(int st_time, int end_time, int days)
@@ -446,7 +432,6 @@ void lstFreeSlots(int st_time, int end_time, char userID)
 void getActStats() { cout << "To be implemented!" << endl; }
 void getCalStats() { cout << "To be implemented!" << endl; }
 void delUser(char userID) { cout << "To be implemented!" << endl; }
-void showCal(char month[]) { cout << "To be implemented!" << endl; }
 void dispMonth(int month) { cout << "To be implemented!" << endl; }
 
 void dispFeatures()
@@ -468,32 +453,28 @@ void dispFeatures()
           "calendar.\n'S' - Show Features Menu.\n'Q' - Exit program.\n";
 }
 
-void getID(char ID[])
+char *getID()
 {
-  cout << endl;
-  while (1)
+  static char ID[200];
+  cout << "Enter the user ID (eg: user49): ";
+  while (cin >> ID)
   {
-    cout << "Enter the user ID: ";
-    cin >> ID;
     if (isValidID(ID))
       break;
-    else
-      cout << "Invalid ID specified." << endl;
+    cout << "Invalid ID specified." << endl;
   }
+  return ID;
 }
 
 int getMonth()
 {
   int mon;
-  cout << endl;
-  while (1)
+  cout << "Enter month number (1-12): ";
+  while (cin >> mon)
   {
-    cout << "Enter month number: ";
-    cin >> mon;
     if (isValidMonth(--mon))
       return mon;
-    else
-      cout << "Invalid Month specified." << endl;
+    cout << "Invalid Month specified." << endl;
   }
   return mon;
 }
@@ -501,15 +482,12 @@ int getMonth()
 int getDay()
 {
   int day;
-  cout << endl;
-  while (1)
+  cout << "Enter day number (1-31): ";
+  while (cin >> day)
   {
-    cout << "Enter day number: ";
-    cin >> day;
     if (isValidDay(--day))
       return day;
-    else
-      cout << "Invalid Day specified." << endl;
+    cout << "Invalid Day specified." << endl;
   }
   return day;
 }
@@ -567,18 +545,19 @@ void displayMenu()
     }
 
     s = inp[0];
+
     if (s == '0')
     {
-      char user[200];
-      getID(user);
+      char *user;
+      user = getID();
       int m = getMonth(), m1 = getMonth(), d = getDay(), d1 = getDay();
       lstAct(user, m, m1, d, d1);
     }
 
     else if (s == '1')
     {
-      char user[200];
-      getID(user);
+      char *user;
+      user = getID();
       int m = getMonth(), m1 = getMonth(), d = getDay(), d1 = getDay();
       lstImpAct(user, m, m1, d, d1);
     }
@@ -608,8 +587,9 @@ void displayMenu()
     // delUser();
 
     else if (s == '8')
-      cout << "To be implemented!" << endl;
-    // saveCal();
+    {
+      cout << "Calendar has been saved in <" << saveCal(calendar) << ">\n";
+    }
 
     else if (s == '9')
       cout << "To be implemented!" << endl;
@@ -637,7 +617,7 @@ int main()
   std::ifstream fin("calendar1.dat");
   initCal(calendar);
   fillCal(calendar, fin);
-  outputCal(calendar);
-  // displayMenu();
+  // outputCal(calendar);
+  displayMenu();
   delCal(calendar);
 }
