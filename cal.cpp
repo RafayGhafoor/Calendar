@@ -14,7 +14,7 @@ struct activity
   char *user_id, *title;
 };
 
-void displayAct(activity *&info, int mon, int day, int &act_count)
+void displayAct(activity *&info, int &act_count)
 {
   cout << "-------------------------------------------------" << endl;
   if (info->user_id && info->title)
@@ -22,8 +22,9 @@ void displayAct(activity *&info, int mon, int day, int &act_count)
     cout << "UserID: " << info->user_id << endl;
     cout << "Activity Number [" << act_count++ + 1 << ']' << endl;
 
-    cout << "Month: " << mon + 1 << " | Day: " << day + 1 << " | ("
-         << info->start_time << " - " << info->end_time << ')' << endl;
+    cout << "Month: " << info->month + 1 << " | Day: " << info->day + 1
+         << " | (" << info->start_time << " - " << info->end_time << ')'
+         << endl;
 
     cout << "Name: " << info->title << endl;
 
@@ -323,7 +324,7 @@ void outputCal(activity *****&calendar)
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
              act++)
           if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
-            displayAct(calendar[mon][day][hr][act], mon, day, act_count);
+            displayAct(calendar[mon][day][hr][act], act_count);
 }
 
 std::string saveCal(activity *****&calendar,
@@ -373,7 +374,7 @@ void lstAct(char userID[], int st_mon = 0, int end_mon = 11, int start_day = 0,
              calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
              act++)
           if (!strcmp(userID, calendar[mon][day][hr][act]->user_id))
-            displayAct(calendar[mon][day][hr][act], mon, day, act_count);
+            displayAct(calendar[mon][day][hr][act], act_count);
   }
 }
 
@@ -413,7 +414,7 @@ void lstImpAct(char userID[], int st_mon = 0, int end_mon = 11,
   for (int i = 0, t = 1; t <= 5; i++)
   {
     if (info[i]->priority > 0)
-      displayAct(info[i], info[i]->month, info[i]->day, t);
+      displayAct(info[i], t);
   }
 }
 
