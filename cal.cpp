@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <stdio.h>
 
 using std::cin;
 using std::cout;
@@ -385,14 +386,64 @@ void lstImpAct(char userID[], int st_mon = 0, int end_mon = 11,
       displayAct(info[i], t);
 }
 
-void lstFreePeriod(int st_time, int end_time, int days) {
-  cout << "To be implemented!" << endl;
+void lstFreePeriod(char userID[]) {
+  int total_days = 0, temp_total_days = 0, start_month = 0, end_month = 0,
+      temp_start_month, start_day = 0, end_day = 0, temp_start_day = 0;
+
+  bool start_check = false;
+  for (int mon = 0; mon < 12; mon++) {
+    for (int day = 0; day < DAYS_IN_MONTHS[mon]; day++, temp_total_days++) {
+      for (int hr = 0; hr < 24; hr++)
+        for (int act = 0; act < getActs(calendar[mon][day][hr]); act++) {
+          if (strcmp(userID, calendar[mon][day][hr][act]->user_id) &&
+              !start_check) {
+            temp_start_day = day;
+            temp_start_month = mon;
+            start_check = true;
+          }
+
+          if (!strcmp(userID,
+                      calendar[mon][day][hr][act]->user_id)) { // found activity
+            if (temp_total_days >= total_days) {
+              start_day = temp_start_day;
+              start_month = temp_start_month;
+              end_month = mon;
+              total_days = temp_total_days;
+              start_check = false;
+              end_day = day;
+            }
+            temp_total_days = 0;
+            break;
+          }
+        }
+    }
+  }
+  cout << "Ordered by: Start Date - End Date | Max Days\n";
+  printf("(%d/%d/2019 - %d/%d/2019)\t[Max Days: {%d}]\n", start_day + 1,
+         start_month + 1, end_day + 1, end_month + 1, total_days);
 }
+
 void lstClashes(int st_time, int end_time, char userID1, char userID2) {
   cout << "To be implemented!" << endl;
 }
+
 void lstFreeSlots(int st_time, int end_time, char userID) {
   cout << "To be implemented!" << endl;
+}
+
+void rmUser(char userID[]) {
+  for (int mon = 0; mon < 12; mon++)
+    for (int day = 0; day < DAYS_IN_MONTHS[mon]; day++)
+      for (int hr = 0; hr < 24; hr++)
+        for (int act = 0;
+             calendar[mon][day][hr] && act < getActs(calendar[mon][day][hr]);
+             act++)
+          if (calendar[mon][day][hr] && calendar[mon][day][hr][act])
+            if (!strcmp(userID, calendar[mon][day][hr][act]->user_id)) {
+              delete[] calendar[mon][day][hr][act]->user_id;
+              delete[] calendar[mon][day][hr][act]->title;
+              calendar[mon][day][hr][act] = nullptr;
+            }
 }
 
 struct meta_data {
@@ -477,6 +528,7 @@ void getCalStats() {
   year_avg_acts = year_acts * 1.0 / 12;
   busiest_month = findMax(PRIORITIES, 12);
   most_imp_month_acts = collection[busiest_month].total_acts;
+
   cout << "Number of Activities in whole year are: [" << year_acts << ']'
        << endl;
   cout << "Busiest Month is: [" << MONTH_NAMES[busiest_month] << ']' << endl;
@@ -484,9 +536,13 @@ void getCalStats() {
        << ']' << endl;
   cout << "Number of Activities in the busiest month are: ["
        << most_imp_month_acts << ']' << endl;
+
+  for (int i = 0; i < 12; i++) {
+    delete[] collection[i].priority_coll;
+    delete[] collection[i].acts_coll;
+  }
 }
 
-void delUser(char userID) { cout << "To be implemented!" << endl; }
 void dispMonth(int month) { cout << "To be implemented!" << endl; }
 
 void dispFeatures() {
@@ -601,9 +657,11 @@ void displayMenu() {
       lstImpAct(user, m, m1, d, d1);
     }
 
-    else if (s == '2')
-      cout << "To be implemented!" << endl;
-    // lstFreePeriod();
+    else if (s == '2') {
+      char *user;
+      user = getID();
+      lstFreePeriod(user);
+    }
 
     else if (s == '3')
       cout << "To be implemented!" << endl;
@@ -616,14 +674,19 @@ void displayMenu() {
     else if (s == '5') {
       meta_data result = getActStats(getMonth());
       displayMonthStats(result);
+      delete[] result.acts_coll;
+      delete[] result.priority_coll;
     }
 
     else if (s == '6')
       getCalStats();
 
-    else if (s == '7')
-      cout << "To be implemented!" << endl;
-    // delUser();
+    else if (s == '7') {
+      char *user;
+      user = getID();
+      rmUser(user);
+      cout << user << " has been removed." << endl;
+    }
 
     else if (s == '8') {
       cout << "Calendar has been saved in <" << saveCal(calendar) << ">\n";
